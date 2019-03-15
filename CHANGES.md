@@ -1,4 +1,9 @@
-# pythoncyc-notebooks
+# CHANGES proposed to PythonCyc 1.0
+# Rodrigo Santibáñez @ Network Biology Lab (NBL), Universidad Mayor, 2019
+
+# Beware that there is a number of functions that works in the 
+# pathway tools lisp interpreter (ptlisp), but no from the python interface.
+# For those functions, the API prints the query to the standard output.
 
 Section 5 API functions
 - Section 5.1 enumeration functions
