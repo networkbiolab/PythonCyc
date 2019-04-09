@@ -51,7 +51,7 @@ def recvAll(s):
 		the message received on socket s as a string.
 	"""
 	if config._debug:
-		print 'recvAll ...'
+		print('recvAll ...')
 
 	# Get the type of message which is one character long.
 	type = s.recv(1)
@@ -64,7 +64,7 @@ def recvAll(s):
 		# The next 10 characters give the length.
 		lengthMsg = int(recvFixedLength(s, 10))
 		if config._debug:
-			print "lengthMsg ", lengthMsg
+			print("lengthMsg {:d}".format(lengthMsg))
 		return recvFixedLength(s, lengthMsg)
 	else:
 		# Something is broken on the server side, so
@@ -164,10 +164,10 @@ def sendQueryToPTools(query):
 		query, a string that the Python server in Pathway Tools can evaluate.
 
 	Returns
-		The result of the query, as a Python object, decoded by Json.
+		The result of the query, as a Python object, decoded by JSON.
 	"""
 	if config._debug:
-		print 'Sending query ' + query
+		print('Sending query ' + query)
 
 	if config._hostname == '':
 	   raise PToolsError('The hostname to connect to a running Pathway Tools has not been set. Use function config.set_hostname() to set the host name of your running Pathway Tools.')
@@ -185,11 +185,11 @@ def sendQueryToPTools(query):
 	sendAll(s, query)
 
 	if config._debug:
-		print 'Sent ' + query + ' to Pathway Tools.'
+		print('Sent ' + query + ' to Pathway Tools.')
 
 	response = recvAll(s)
 	if config._debug and len(response) < 4000:
-		print 'JSON Received: ', response
+		print('JSON Received: {:s}'.format(response))
 	r = json.loads(response)
 	s.close()
 

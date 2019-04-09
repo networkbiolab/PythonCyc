@@ -39,7 +39,7 @@ def set_debug_on():
 	"""
 	global _debug
 	_debug = True
-	print 'Debug on.'
+	print('Debug on.')
 
 def set_debug_off():
 	"""
@@ -49,14 +49,14 @@ def set_debug_off():
 	"""
 	global _debug
 	_debug = False
-	print 'Debug off.'
+	print('Debug off.')
 
 def set_host_name(hostname):
 	global _hostname
 	_hostname = hostname
-	print 'PythonCyc will communicate with Pathway Tools running on host name ', _hostname
+	print('PythonCyc will communicate with Pathway Tools running on host name {:s}'.format(_hostname))
 
 def set_host_port(hostport):
 	global _hostport
 	_hostport = hostport
-	print 'PythonCyc will communicate with Pathway Tools running on host port ', _hostport
+	print('PythonCyc will communicate with Pathway Tools running on host port {:d}'.format(_hostport))

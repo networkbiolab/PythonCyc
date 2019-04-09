@@ -75,7 +75,7 @@ def biovelo(query):
     Example
        bv('[(p, reactions-of-pathway(p)): p<-ecoli^^pathways]')
     """
-    return sendQueryToPTools('(biovelo "'+query+'")')
+    return sendQueryToPTools('(biovelo "' + query + '")')
 
 def bv(query):
     """
@@ -92,4 +92,4 @@ def run_fba(fileName):
     For the documentation of this function, see method run_fba
     in file PGDB.py.
     """
-    return sendQueryToPTools('(python-run-fba "'+fileName+'")')
+    return sendQueryToPTools('(python-run-fba "' + fileName + '")')

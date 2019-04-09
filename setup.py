@@ -29,12 +29,12 @@ def main():
 
 	setup(
 		name='PythonCyc',
-		version='1.0',
-		author='Mario Latendresse',
-		author_email='latendre@ai.sri.com',
+		version='2.0',
+		author='Rodrigo Santibáñez',
+		author_email='glucksfall@users.noreply.github.com',
 		packages=['pythoncyc'],
 		license='LICENSE',
-		description='A Python interface to Pathway Tools',
+		description='A Python interface to Pathway Tools, 2019 update',
 		long_description=open('README.md').read()
 		)
 

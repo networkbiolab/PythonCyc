@@ -155,7 +155,8 @@ def prepareFnCall(fn, *args, **kwargs):
 		for key in kwargs if kwargs[key] != None ])
 
 	lisp_query = '(' + fn + ' ' + args2 + ' ' + keywords + ')'
-	print lisp_query
+	if config._debug:
+		print(lisp_query)
 	return lisp_query
 
 class PGDB():
@@ -172,7 +173,7 @@ class PGDB():
 		Python, such as ecoli.reactions.
 		"""
 		if config._debug:
-			print "PGDB __init__"
+			print("PGDB __init__")
 		self._orgid = "unknown"
 		self._error = False
 
@@ -238,7 +239,10 @@ class PGDB():
 		automatically when the corresponding instances or classes exist in the PGDB.
 		"""
 		if config._debug:
-			print "PGDB ", self._orgid, "__getattr__", attr
+			print("PGDB ")
+			print(self._orgid)
+			print("__getattr__")
+			print(attr)
 
 		# If the converted attribute exists as an attribute.
 		attrId = convertLispIdtoPythonId(attr)
@@ -269,7 +273,7 @@ class PGDB():
 	   def _ipython_display_(self):
 			table = "<table>"
 			# A PGDB frame may contain thousands of attributes, one
-			# for each instance. This output is too large to print in
+			# for each instance. This output is too large to printin
 			# most cases. Print a succinct representation of the PGDB frame.
 			table = table + "<tr><td>orgid</td><td>" + self._orgid + "</td></tr>"
 			table = table + "<tr><td>Number of PFrames</td><td>" + str(self._nb_pframes()) + "</td></tr>"
@@ -286,7 +290,7 @@ class PGDB():
 
 	def __getitem__(self, index):
 		if config._debug:
-			print "PGDB __getitem__", index
+			print"PGDB __getitem__", index
 		if (isinstance(index,int) or isinstance(index,slice)) :
 			if self._frames:
 				return self._frames[index]
@@ -351,11 +355,12 @@ class PGDB():
 		"""
 		# Evaluate a query in the context of this PGDB.
 		if self._orgid == "unknown":
-			print "Cannot send any query because the selected organism is unknown."
+			print("Cannot send any query because the selected organism is unknown.")
 			return None
 		else:
 			lisp_query = '(with-organism (:org-id \'' + self._orgid + ') ' + query + ')'
-			print lisp_query
+			if config._debug:
+				print(lisp_query)
 			return PTools.sendQueryToPTools(lisp_query)
 
 	def sendPgdbFnCall(self, fn, *args, **kwargs):
@@ -364,7 +369,8 @@ class PGDB():
 		kwargs (keyword args) and return the result. If multiple values are
 		returned by fn, the Pathway Tools Python server transforms them into a list.
 		"""
-		print fn
+		if config._debug:
+			print(fn)
 		fnCall = prepareFnCall(fn, *args, **kwargs)
 		return self.sendPgdbQuery(fnCall)
 
@@ -2373,7 +2379,7 @@ class PGDB():
 			A list if genes are in the same replicon. Otherwise False.
 		"""
 		if g1 == g2:
-			print "genes are the same."
+			print("both queries are the same.")
 			return None
 		else:
 			return self.sendPgdbFnCallBool('adjacent-genes?', may_be_frameid(g1), may_be_frameid(g2))
@@ -2397,7 +2403,7 @@ class PGDB():
 			A boolean value.
 		"""
 		if g1 == g2:
-			print "genes are the same."
+			print("both queries are the same.")
 			return None
 		else:
 			return self.sendPgdbFnCallBool('neighboring-genes-p', may_be_frameid(g1), may_be_frameid(g2), max_gap)
