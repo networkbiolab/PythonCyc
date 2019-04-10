@@ -26,8 +26,8 @@ how to use this class.
 """
 
 import sys
-import config
-from PTools import PToolsError, PythonCycError
+import pythoncyc.config
+from pythoncyc.PTools import PToolsError, PythonCycError
 
 if 'IPython' in sys.modules:
 	from IPython.display import display, HTML
@@ -117,13 +117,13 @@ class PFrame():
 
 	def __getslice__(self, i, j, stride = None):
 		if config._debug:
-			print 'PFrame __getslice__ ', i, j, stride
+			print('PFrame __getslice__ ', i, j, stride)
 		return self.instances[i:j:stride]
 
 	def __getattr__(self, attr):
 		# Accessing a slot of the frame using attribute syntax (e.g. r.left)
 		if config._debug:
-			print 'PFrame __getattr__ ', attr
+			print('PFrame __getattr__ ', attr)
 
 		if attr in self.__dict__:
 			return self.__dict__[attr]
@@ -146,7 +146,7 @@ class PFrame():
 
 	def __getitem__(self,attr):
 		if config._debug:
-			print "PFrame __getitem__ ", attr
+			print("PFrame __getitem__ ", attr)
 		# The slice case is for attr = slice(i,j,s)
 		if (isinstance(attr,int) or isinstance(attr, slice)):
 			if 'instances' in self.__dict__:

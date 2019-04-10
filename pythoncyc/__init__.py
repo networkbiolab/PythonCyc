@@ -40,9 +40,9 @@ See class PGDB in PGDB.py for information about how to use a PGDB object.
 Please consult the tutorial.html file, under directory doc, for more information
 about how to use PythonCyc.
 """
-
-from PGDB import PGDB
-from PTools import sendQueryToPTools
+import pythoncyc.config
+from pythoncyc.PGDB import PGDB
+from pythoncyc.PTools import sendQueryToPTools
 
 def select_organism(orgid):
     """

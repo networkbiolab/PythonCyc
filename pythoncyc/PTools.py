@@ -26,14 +26,10 @@ network socket to Pathway Tools. No major class is defined in this file, but
 only toplevel functions and some simple classes for errors handling.
 """
 
-import os
-import sys
-import socket as so
-import json
-import time
-import config
+import json, os, sys, socket, time
+import pythoncyc.config
 
-def recvAll(s):
+def recvAll(msg):
 	"""
 	Description
 		Receive the entire message sent by Pathway Tools on socket s. The message starts
@@ -50,33 +46,34 @@ def recvAll(s):
 	Return
 		the message received on socket s as a string.
 	"""
-	if config._debug:
+	if pythoncyc.config._debug:
 		print('recvAll ...')
 
 	# Get the type of message which is one character long.
-	type = s.recv(1)
+	msg_type = msg.recv(1)
 
-	# print "type ", type
-	if type == 'A':
+	if pythoncyc.config._debug:
+		print("type ", msg_type)
+	if msg_type == 'A':
 		# The length of the message is not given, use time out approach.
-		return recvTimeOut(s)
-	elif type == 'L':
+		return recvTimeOut(msg)
+	elif msg_type == 'L':
 		# The next 10 characters give the length.
-		lengthMsg = int(recvFixedLength(s, 10))
+		lengthMsg = int(recvFixedLength(msg, 10))
 		if config._debug:
 			print("lengthMsg {:d}".format(lengthMsg))
-		return recvFixedLength(s, lengthMsg)
+		return recvFixedLength(msg, lengthMsg)
 	else:
 		# Something is broken on the server side, so
 		# use recv with a long timeout to try flushing
 		# the sent message.
-		return recvTimeOut(s, timeOut=5)
+		return recvTimeOut(msg, timeOut=5)
 
-def sendAll(s, query):
+def sendAll(so, query):
 	sent_len  = 0
 	query_len = len(query)
 	while sent_len < query_len:
-		nb_chars = s.send(query[sent_len:])
+		nb_chars = so.send(query[sent_len:])
 		if nb_chars == 0:
 			raise PythonCycError("Connection to Pathway Tools broke while sending query {:s}.".format(query))
 		sent_len = sent_len + nb_chars
@@ -104,7 +101,7 @@ def recvFixedLength(s, lengthMsg):
 	# print 'Fixed receive: ',  ''.join(pieces)
 	return ''.join(pieces)
 
-def recvTimeOut(socket, timeOut=2):
+def recvTimeOut(open_socket, timeOut=2):
 	"""
 	Description
 		Receive a message of unknown length on socket. While receiving a message, if no
@@ -114,7 +111,7 @@ def recvTimeOut(socket, timeOut=2):
 		is received after 60 seconds, this method returns with an empty message.
 
 	Parms
-		socket
+		open_socket
 			an open network socket.
 		timeOut
 			number of seconds before timing out between fragments of the received message.
@@ -137,15 +134,16 @@ def recvTimeOut(socket, timeOut=2):
 			break
 		# Try to receive some text.
 		try:
-			data = socket.recv(4096)
+			data = open_socket.recv(4096)
 			if data:
-				pieces.append(data)
+				print(data)
+				pieces.append(data.decode())
 				# Reset beginning time for next recv.
 				begin = time.time()
 			else:
 				# Slow down in case timeOut is small.
 				time.sleep(0.1)
-		except so.error:
+		except open_socket.error:
 			pass
 
 	# Join all the pieces together.
@@ -166,32 +164,34 @@ def sendQueryToPTools(query):
 	Returns
 		The result of the query, as a Python object, decoded by JSON.
 	"""
-	if config._debug:
+	if pythoncyc.config._debug:
 		print('Sending query ' + query)
 
-	if config._hostname == '':
+	if pythoncyc.config._hostname == '':
 	   raise PToolsError('The hostname to connect to a running Pathway Tools has not been set. Use function config.set_hostname() to set the host name of your running Pathway Tools.')
 
 	try:
-		s = so.socket(so.AF_INET, so.SOCK_STREAM)
+		open_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		# Make socket non blocking.
-		s.setblocking(0)
-		s.settimeout(360)  # The query may take a long time in some cases.
-		s.connect((config._hostname, config._hostport))
-	except so.error, msg:
-		raise PToolsError('Failed to create a connection to a running Pathway Tools at ' + config._hostname + ' on port ' + str(config._hostport) + '. Make sure Pathway Tools is running with option -python. Error code: ' + str(msg[0]) + ', error message: ' + msg[1])
+		open_socket.setblocking(0)
+		open_socket.settimeout(360)  # The query may take a long time in some cases.
+		open_socket.connect((pythoncyc.config._hostname, pythoncyc.config._hostport))
+
+	except socket.error as msg:
+		raise PToolsError('Failed to create a connection to a running Pathway Tools at ' + pythoncyc.config._hostname + ' on port ' + str(pythoncyc.config._hostport) + '. Make sure Pathway Tools is running with option -python. Error code: ' + str(msg[0]) + ', error message: ' + msg[1])
 
 	# Send, receive and close socket.
-	sendAll(s, query)
+	sendAll(open_socket, query.encode())
 
-	if config._debug:
+	if pythoncyc.config._debug:
 		print('Sent ' + query + ' to Pathway Tools.')
 
-	response = recvAll(s)
-	if config._debug and len(response) < 4000:
-		print('JSON Received: {:s}'.format(response))
+	response = recvAll(open_socket)
+	print(response)
+	#if pythoncyc.config._debug and len(response) < 4000:
+	print('JSON Received: {:s}'.format(response))
 	r = json.loads(response)
-	s.close()
+	open_socket.close()
 
 	if isinstance(r, basestring) and r.startswith(':error'):
 		raise PToolsError('An internal error occurred in the running Pathway Tools application: {:s}'.format(r))

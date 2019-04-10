@@ -20,11 +20,11 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # ----------------------------------------------------------------------
 
-import PTools
 import sys
-import config
-from PTools import PToolsError, PythonCycError
-from PToolsFrame import Symbol, PFrame, convertLispIdtoPythonId
+import pythoncyc.PTools
+import pythoncyc.config
+from pythoncyc.PTools import PToolsError, PythonCycError
+from pythoncyc.PToolsFrame import Symbol, PFrame, convertLispIdtoPythonId
 
 if 'IPython' in sys.modules:
 	from IPython.display import display, HTML
@@ -183,7 +183,7 @@ class PGDB():
 		# Verify that the running Pathway Tools has the PGDB (organism).
 		try:
 		   r = PTools.sendQueryToPTools('(orgid-exist-p \'' + orgid + ')')
-		except PToolsError, msg:
+		except PToolsError as msg:
 			raise PythonCycError('Pathway Tools was unable to verify if organism (orgid) {:s} is known in your running Pathway Tools. More specifically: {:s}'.format(orgid, msg))
 		if not r:
 			raise PythonCycError("The organism orgid {:s} is unknown. Use pythoncyc.all_orgids() to get a list of known orgids.".format(orgid))
@@ -270,7 +270,7 @@ class PGDB():
 			return None
 
 	if 'IPython' in sys.modules:
-	   def _ipython_display_(self):
+		def _ipython_display_(self):
 			table = "<table>"
 			# A PGDB frame may contain thousands of attributes, one
 			# for each instance. This output is too large to printin
@@ -290,7 +290,7 @@ class PGDB():
 
 	def __getitem__(self, index):
 		if config._debug:
-			print"PGDB __getitem__", index
+			print("PGDB __getitem__", index)
 		if (isinstance(index,int) or isinstance(index,slice)) :
 			if self._frames:
 				return self._frames[index]
