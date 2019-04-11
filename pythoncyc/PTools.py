@@ -29,10 +29,10 @@ only toplevel functions and some simple classes for errors handling.
 import json, os, sys, socket, time
 import pythoncyc.config
 
-def recvAll(msg):
+def recvAll(open_socket):
 	"""
 	Description
-		Receive the entire message sent by Pathway Tools on socket s. The message starts
+		Receive the entire message sent by Pathway Tools on an open socket. The message starts
 		with a single character type, which is either 'A' or 'L'. The 'A' time is used
 		without providing a length but can take longer to receive because it uses a
 		timeout technique to read the entire message. The 'L' type assumes that the
@@ -41,7 +41,7 @@ def recvAll(msg):
 		characters.
 
 	Parm
-		s, an open network socket.
+		open_socket, an open network socket.
 
 	Return
 		the message received on socket s as a string.
@@ -50,38 +50,39 @@ def recvAll(msg):
 		print('recvAll ...')
 
 	# Get the type of message which is one character long.
-	msg_type = msg.recv(1)
+	msg_type = open_socket.recv(1)
 
 	if pythoncyc.config._debug:
 		print("type ", msg_type)
-	if msg_type == 'A':
+
+	if msg_type == b'A':
 		# The length of the message is not given, use time out approach.
-		return recvTimeOut(msg)
-	elif msg_type == 'L':
+		return recvTimeOut(open_socket)
+	elif msg_type == b'L':
 		# The next 10 characters give the length.
-		lengthMsg = int(recvFixedLength(msg, 10))
-		if config._debug:
+		lengthMsg = int(recvFixedLength(open_socket, 10))
+		if pythoncyc.config._debug:
 			print("lengthMsg {:d}".format(lengthMsg))
-		return recvFixedLength(msg, lengthMsg)
+		return recvFixedLength(open_socket, lengthMsg)
 	else:
 		# Something is broken on the server side, so
 		# use recv with a long timeout to try flushing
 		# the sent message.
-		return recvTimeOut(msg, timeOut=5)
+		return recvTimeOut(open_socket, timeOut=5)
 
-def sendAll(so, query):
+def sendAll(open_socket, query):
 	sent_len  = 0
 	query_len = len(query)
 	while sent_len < query_len:
-		nb_chars = so.send(query[sent_len:])
+		nb_chars = open_socket.send(query[sent_len:])
 		if nb_chars == 0:
 			raise PythonCycError("Connection to Pathway Tools broke while sending query {:s}.".format(query))
 		sent_len = sent_len + nb_chars
 
-def recvFixedLength(s, lengthMsg):
+def recvFixedLength(open_socket, lengthMsg):
 	"""
 	Description
-		Receive a fixed length message on socket s.
+		Receive a fixed length message on an open socket.
 
 	Parm
 		lengthMsg, an integer, which is the length in characters of the message to receive.
@@ -92,11 +93,11 @@ def recvFixedLength(s, lengthMsg):
 	pieces = []
 	nbBytesRecv = 0
 	while nbBytesRecv < lengthMsg:
-		piece = s.recv(min(lengthMsg - nbBytesRecv, 4096))
+		piece = open_socket.recv(min(lengthMsg - nbBytesRecv, 4096))
 		if piece == '':
 			# Give up now because nothing was received.
 			return ''.join(pieces)
-		pieces.append(piece)
+		pieces.append(piece.decode())
 		nbBytesRecv = nbBytesRecv + len(piece)
 	# print 'Fixed receive: ',  ''.join(pieces)
 	return ''.join(pieces)
@@ -143,7 +144,7 @@ def recvTimeOut(open_socket, timeOut=2):
 			else:
 				# Slow down in case timeOut is small.
 				time.sleep(0.1)
-		except open_socket.error:
+		except socket.error:
 			pass
 
 	# Join all the pieces together.
@@ -187,17 +188,16 @@ def sendQueryToPTools(query):
 		print('Sent ' + query + ' to Pathway Tools.')
 
 	response = recvAll(open_socket)
-	print(response)
-	#if pythoncyc.config._debug and len(response) < 4000:
-	print('JSON Received: {:s}'.format(response))
-	r = json.loads(response)
+	if pythoncyc.config._debug and len(response) < 4000:
+		print('JSON Received: {:s}'.format(response))
+	msg = json.loads(response)
 	open_socket.close()
 
-	if isinstance(r, basestring) and r.startswith(':error'):
+	if isinstance(msg, str) and r.startswith(':error'):
 		raise PToolsError('An internal error occurred in the running Pathway Tools application: {:s}'.format(r))
 	else:
 		# Return some result.
-		return r
+		return msg
 
 class PythonCycError(Exception):
 	"""
