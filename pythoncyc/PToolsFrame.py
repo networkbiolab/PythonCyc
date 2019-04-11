@@ -116,13 +116,13 @@ class PFrame():
 	# End of definitions for pickle.
 
 	def __getslice__(self, i, j, stride = None):
-		if config._debug:
+		if pythoncyc.config._debug:
 			print('PFrame __getslice__ ', i, j, stride)
 		return self.instances[i:j:stride]
 
 	def __getattr__(self, attr):
 		# Accessing a slot of the frame using attribute syntax (e.g. r.left)
-		if config._debug:
+		if pythoncyc.config._debug:
 			print('PFrame __getattr__ ', attr)
 
 		if attr in self.__dict__:
@@ -145,7 +145,7 @@ class PFrame():
 				return self.__dict__[attrId]
 
 	def __getitem__(self,attr):
-		if config._debug:
+		if pythoncyc.config._debug:
 			print("PFrame __getitem__ ", attr)
 		# The slice case is for attr = slice(i,j,s)
 		if (isinstance(attr,int) or isinstance(attr, slice)):

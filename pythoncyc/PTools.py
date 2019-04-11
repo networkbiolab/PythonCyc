@@ -169,7 +169,7 @@ def sendQueryToPTools(query):
 		print('Sending query ' + query)
 
 	if pythoncyc.config._hostname == '':
-	   raise PToolsError('The hostname to connect to a running Pathway Tools has not been set. Use function config.set_hostname() to set the host name of your running Pathway Tools.')
+	   raise PToolsError('The hostname to connect to a running Pathway Tools has not been set. Use function pythoncyc.config.set_hostname() to set the host name of your running Pathway Tools.')
 
 	try:
 		open_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -193,7 +193,7 @@ def sendQueryToPTools(query):
 	msg = json.loads(response)
 	open_socket.close()
 
-	if isinstance(msg, str) and r.startswith(':error'):
+	if isinstance(msg, str) and msg.startswith(':error'):
 		raise PToolsError('An internal error occurred in the running Pathway Tools application: {:s}'.format(r))
 	else:
 		# Return some result.

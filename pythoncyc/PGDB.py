@@ -21,8 +21,8 @@
 # ----------------------------------------------------------------------
 
 import sys
-import pythoncyc.PTools
 import pythoncyc.config
+import pythoncyc.PTools as PTools
 from pythoncyc.PTools import PToolsError, PythonCycError
 from pythoncyc.PToolsFrame import Symbol, PFrame, convertLispIdtoPythonId
 
@@ -51,7 +51,7 @@ def may_be_frameid(obj):
 		return [ may_be_frameid(y) for y in obj ]
 	elif isinstance(obj, PFrame):
 		return obj
-	elif isinstance(obj, basestring):
+	elif isinstance(obj, str):
 		return Symbol(obj)
 	else:
 		raise PythonCycError('Error: the argument must a string or a PFrame, but given {0}.'.format(x))
@@ -66,7 +66,7 @@ def mkey(obj):
 	Returns
 		if obj is a string, it is suffixed by ':', otherwise obj itself.
 	"""
-	if isinstance(obj, basestring):
+	if isinstance(obj, str):
 		return ':' + obj
 	else:
 		return obj
@@ -89,7 +89,7 @@ def convertArgToLisp(arg, inquote=False):
 		return ("" if inquote else "'") + arg._name
 
 	# Type basestring includes string and unicode string.
-	elif isinstance(arg, basestring):
+	elif isinstance(arg, str):
 		# It is either a symbol, a string or a keyword.
 		# If it starts and ends with '|', assumes it is a symbol and add
 		# a quote if not already in a quoted context otherwise just
@@ -110,7 +110,7 @@ def convertArgToLisp(arg, inquote=False):
 		return 't' if arg else 'nil'
 	elif arg == None:
 		return 'nil'
-	elif isinstance(arg, (int, long, float, complex)):
+	elif isinstance(arg, (int, float, complex)):
 		return str(arg)
 	elif isinstance(arg, PFrame):
 		# Just using the frameid is enough (there is no need to
@@ -155,7 +155,7 @@ def prepareFnCall(fn, *args, **kwargs):
 		for key in kwargs if kwargs[key] != None ])
 
 	lisp_query = '(' + fn + ' ' + args2 + ' ' + keywords + ')'
-	if config._debug:
+	if pythoncyc.config._debug:
 		print(lisp_query)
 	return lisp_query
 
@@ -172,7 +172,7 @@ class PGDB():
 		many classes of objects can be retrieved by using the attribute syntax of
 		Python, such as ecoli.reactions.
 		"""
-		if config._debug:
+		if pythoncyc.config._debug:
 			print("PGDB __init__")
 		self._orgid = "unknown"
 		self._error = False
@@ -238,11 +238,8 @@ class PGDB():
 		may exist as an instance or as a class. PFrame instances and classes are created
 		automatically when the corresponding instances or classes exist in the PGDB.
 		"""
-		if config._debug:
-			print("PGDB ")
-			print(self._orgid)
-			print("__getattr__")
-			print(attr)
+		if pythoncyc.config._debug:
+			print("PGDB ", self._orgid, "__getattr__", attr)
 
 		# If the converted attribute exists as an attribute.
 		attrId = convertLispIdtoPythonId(attr)
@@ -289,7 +286,7 @@ class PGDB():
 		return None
 
 	def __getitem__(self, index):
-		if config._debug:
+		if pythoncyc.config._debug:
 			print("PGDB __getitem__", index)
 		if (isinstance(index,int) or isinstance(index,slice)) :
 			if self._frames:
@@ -359,7 +356,7 @@ class PGDB():
 			return None
 		else:
 			lisp_query = '(with-organism (:org-id \'' + self._orgid + ') ' + query + ')'
-			if config._debug:
+			if pythoncyc.config._debug:
 				print(lisp_query)
 			return PTools.sendQueryToPTools(lisp_query)
 
@@ -369,7 +366,7 @@ class PGDB():
 		kwargs (keyword args) and return the result. If multiple values are
 		returned by fn, the Pathway Tools Python server transforms them into a list.
 		"""
-		if config._debug:
+		if pythoncyc.config._debug:
 			print(fn)
 		fnCall = prepareFnCall(fn, *args, **kwargs)
 		return self.sendPgdbQuery(fnCall)
@@ -482,7 +479,7 @@ class PGDB():
 		"""
 		frameObjects = self.sendPgdbFnCallList('get-frame-objects', may_be_frameid(frameids))
 		pframes = []
-		for frameid, slotsData in frameObjects.iteritems():
+		for frameid, slotsData in frameObjects.items():
 			attrID = convertLispIdtoPythonId(frameid)
 			if attrID in self.__dict__:
 				f = self.__dict__[attrID]
@@ -491,7 +488,7 @@ class PGDB():
 				self.__dict__[attrID] = f
 			pframes.append(f)
 			f._gotframe = True
-			for slot, data in slotsData.iteritems():
+			for slot, data in slotsData.items():
 				f.__dict__[convertLispIdtoPythonId(slot)] = data
 		return pframes
 
