@@ -54,7 +54,7 @@ def may_be_frameid(obj):
 	elif isinstance(obj, str):
 		return Symbol(obj)
 	else:
-		raise PythonCycError('Error: the argument must a string or a PFrame, but given {0}.'.format(x))
+		raise PythonCycError('Error: the argument must a string or a PFrame, but given {0}.'.format(obj))
 
 def mkey(obj):
 	"""
