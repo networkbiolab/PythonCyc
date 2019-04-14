@@ -194,7 +194,7 @@ def sendQueryToPTools(query):
 	open_socket.close()
 
 	if isinstance(msg, str) and msg.startswith(':error'):
-		raise PToolsError('An internal error occurred in the running Pathway Tools application: {:s}'.format(r))
+		raise PToolsError('An internal error occurred in the running Pathway Tools application: {:s}'.format(msg))
 	else:
 		# Return some result.
 		return msg
