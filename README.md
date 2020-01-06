@@ -19,6 +19,19 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+PythonCyc 2.0, January 2020
+===========================
+
+Overview
+--------
+
+An updated version of the original PythonCyc API from Mario Latendresse.
+
+This module has been testes under Python 3.6 and Python 3.8, with examples
+at https://github.com/networkbiolab/PythonCyc/tree/master/examples
+
+Disclaimer: a number of functions remains broken.
+
 
 PythonCyc 1.0, November 2014
 ============================
@@ -49,13 +62,13 @@ Documentation
 tutorial.html under the doc directory of this package, or go directly
 to the tutorial by clicking the following link https://github.com/latendre/PythonCyc/blob/master/doc/tutorial.md
 
-2) For the API documentation of PythonCyc, please consult http://pythoncyc.readthedocs.org. 
+2) For the API documentation of PythonCyc, please consult http://pythoncyc.readthedocs.org.
 
 3) For the latest news about PythonCyc, please consult
 http://bioinformatics.ai.sri.com/ptools/pythoncyc.html
 
 Author
------- 
+------
 
 Mario Latendresse, latendre@AI.SRI.COM
 

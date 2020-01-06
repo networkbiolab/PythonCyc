@@ -20,23 +20,50 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 # ----------------------------------------------------------------------
 
-# removed distutils because pip cannot uninstall PythonCyc
-#from distutils.core import setup
+# Always prefer setuptools over distutils
 from setuptools import setup, find_packages
+from codecs import open
+from os import path
+# include example folder
+import glob
 
 def main():
-	# include other folders in the python packages
+	# add examples folders
+	data_files = []
+	directories = glob.glob('example/*/*/*')
+	for directory in directories:
+		files = glob.glob(directory+'*')
+		data_files.append((directory, files))
+	print(data_files)
+
+	# Get the long description from the README file
+	here = path.abspath(path.dirname(__file__))
+	with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+		long_description = f.read()
 
 	setup(
 		name='PythonCyc',
+		license='SRI International',
 		version='2.0',
+		description='A Python interface to Pathway Tools, 2019 update',
+		long_description=long_description,
+		#long_description_content_type='text/markdown',
+		url='https://github.com/networkbiolab/PythonCyc',
 		author='Rodrigo Santibáñez',
 		author_email='glucksfall@users.noreply.github.com',
-		packages=['pythoncyc'],
-		license='LICENSE',
-		description='A Python interface to Pathway Tools, 2019 update',
-		long_description=open('README.md').read()
-		)
+		keywords=[],
+		packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+		install_requires=[],
+		package_data={
+			'example' : ['example'],
+		},
+		data_files=data_files,
+		project_urls={
+			'Manual': 'https://pythoncyc-v20.readthedocs.io',
+			'Bug Reports': 'https://github.com/networkbiolab/PythonCyc/issues',
+			'Source': 'https://github.com/networkbiolab/PythonCyc',
+		},
+	)
 
 if __name__ == '__main__':
     main()
