@@ -27,7 +27,7 @@ Overview
 
 An updated version of the original PythonCyc API from Mario Latendresse.
 
-This module has been testes under Python 3.6 and Python 3.8, with examples
+This module has been tested under Python 3.6 and Python 3.8, with examples
 at https://github.com/networkbiolab/PythonCyc/tree/master/examples
 
 Disclaimer: a number of functions remains broken.
