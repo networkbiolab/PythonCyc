@@ -44,7 +44,7 @@ def main():
 	setup(
 		name='PythonCyc',
 		license='SRI International',
-		version='2.0.1',
+		version='2.0.2',
 		description='A Python interface to Pathway Tools, 2019 update',
 		long_description=long_description,
 		#long_description_content_type='text/markdown',
