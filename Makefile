@@ -1,6 +1,6 @@
 build-package:
 	rm -rf build
-	rm -rf pleione.egg-info
+	rm -rf PythonCyc.egg-info
 	rm -rf __pycache__
 	python3 setup.py bdist_wheel sdist
 
